@@ -1,13 +1,13 @@
 """Add tag to task database function."""
+
 from sqlmodel import select
 
 from src.db.engine import get_session
-from src.models import Task, Tag
+from src.models import Tag, Task
 
 
 def add_tag_to_task(task_id: int, tag_id: int) -> Task:
-    """
-    Add a tag to a task.
+    """Add a tag to a task.
 
     Args:
         task_id: ID of the task

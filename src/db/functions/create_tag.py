@@ -1,11 +1,11 @@
 """Create tag database function."""
+
 from src.db.engine import get_session
 from src.models import Tag
 
 
 def create_tag(name: str, color: str = "#808080") -> Tag:
-    """
-    Create a new tag.
+    """Create a new tag.
 
     Args:
         name: Tag name (must be unique)

@@ -1,10 +1,12 @@
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 from sqlmodel import select
+
+from src.db.engine import get_session
 from src.db.functions.create_task import create_task
 from src.db.functions.edit_task import edit_task
-from src.db.engine import get_session
-from src.models import Task, Priority
+from src.models import Priority, Task
 
 
 def test_edit_task_title():
@@ -49,7 +51,7 @@ def test_edit_task_multiple_fields():
         title="Updated Task",
         priority=Priority.HIGH,
         due_date=due,
-        time_estimate_minutes=60
+        time_estimate_minutes=60,
     )
 
     assert updated_task.title == "Updated Task"

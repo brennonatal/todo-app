@@ -1,4 +1,5 @@
 """Delete task database function."""
+
 from sqlmodel import select
 
 from src.db.engine import get_session
@@ -6,8 +7,7 @@ from src.models import Task
 
 
 def delete_task(task_id: int) -> bool:
-    """
-    Delete a task from the database.
+    """Delete a task from the database.
 
     Args:
         task_id: ID of the task to delete

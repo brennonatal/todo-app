@@ -1,10 +1,10 @@
 import pytest
-from datetime import datetime, timedelta
 from sqlmodel import select
+
+from src.db.engine import get_session
 from src.db.functions.create_task import create_task
 from src.db.functions.list_tasks import list_tasks
-from src.db.engine import get_session
-from src.models import Task, Priority
+from src.models import Priority, Task
 
 
 @pytest.fixture

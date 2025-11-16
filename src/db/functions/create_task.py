@@ -1,22 +1,21 @@
 """Create task database function."""
+
 from datetime import datetime
-from typing import Optional
 
 from src.db.engine import get_session
-from src.models import Task, Priority, RepeatInterval
+from src.models import Priority, RepeatInterval, Task
 
 
 def create_task(
     title: str,
-    description: Optional[str] = None,
+    description: str | None = None,
     priority: Priority = Priority.MEDIUM,
-    due_date: Optional[datetime] = None,
-    start_date: Optional[datetime] = None,
-    time_estimate_minutes: Optional[int] = None,
-    repeat_interval: Optional[RepeatInterval] = None,
+    due_date: datetime | None = None,
+    start_date: datetime | None = None,
+    time_estimate_minutes: int | None = None,
+    repeat_interval: RepeatInterval | None = None,
 ) -> Task:
-    """
-    Create a new task in the database.
+    """Create a new task in the database.
 
     Args:
         title: Task title (required)

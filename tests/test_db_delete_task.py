@@ -1,8 +1,8 @@
-import pytest
 from sqlmodel import select
+
+from src.db.engine import get_session
 from src.db.functions.create_task import create_task
 from src.db.functions.delete_task import delete_task
-from src.db.engine import get_session
 from src.models import Task
 
 

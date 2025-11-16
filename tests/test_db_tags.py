@@ -1,12 +1,12 @@
-import pytest
 from sqlmodel import select
-from src.db.functions.create_task import create_task
-from src.db.functions.create_tag import create_tag
-from src.db.functions.list_tags import list_tags
-from src.db.functions.add_tag_to_task import add_tag_to_task
-from src.db.functions.remove_tag_from_task import remove_tag_from_task
+
 from src.db.engine import get_session
-from src.models import Task, Tag
+from src.db.functions.add_tag_to_task import add_tag_to_task
+from src.db.functions.create_tag import create_tag
+from src.db.functions.create_task import create_task
+from src.db.functions.list_tags import list_tags
+from src.db.functions.remove_tag_from_task import remove_tag_from_task
+from src.models import Tag, Task
 
 
 def test_create_tag():

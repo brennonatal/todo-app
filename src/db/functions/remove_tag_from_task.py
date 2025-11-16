@@ -1,13 +1,13 @@
 """Remove tag from task database function."""
+
 from sqlmodel import select
 
 from src.db.engine import get_session
-from src.models import Task, Tag
+from src.models import Tag, Task
 
 
 def remove_tag_from_task(task_id: int, tag_id: int) -> Task:
-    """
-    Remove a tag from a task.
+    """Remove a tag from a task.
 
     Args:
         task_id: ID of the task

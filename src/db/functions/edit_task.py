@@ -1,26 +1,25 @@
 """Edit task database function."""
+
 from datetime import datetime
-from typing import Optional
 
 from sqlmodel import select
 
 from src.db.engine import get_session
-from src.models import Task, Priority, RepeatInterval
+from src.models import Priority, RepeatInterval, Task
 
 
 def edit_task(
     task_id: int,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    completed: Optional[bool] = None,
-    priority: Optional[Priority] = None,
-    due_date: Optional[datetime] = None,
-    start_date: Optional[datetime] = None,
-    time_estimate_minutes: Optional[int] = None,
-    repeat_interval: Optional[RepeatInterval] = None,
+    title: str | None = None,
+    description: str | None = None,
+    completed: bool | None = None,
+    priority: Priority | None = None,
+    due_date: datetime | None = None,
+    start_date: datetime | None = None,
+    time_estimate_minutes: int | None = None,
+    repeat_interval: RepeatInterval | None = None,
 ) -> Task:
-    """
-    Edit an existing task.
+    """Edit an existing task.
 
     Args:
         task_id: ID of the task to edit

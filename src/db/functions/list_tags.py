@@ -1,4 +1,5 @@
 """List tags database function."""
+
 from sqlmodel import select
 
 from src.db.engine import get_session
@@ -6,8 +7,7 @@ from src.models import Tag
 
 
 def list_tags() -> list[Tag]:
-    """
-    List all tags ordered by name.
+    """List all tags ordered by name.
 
     Returns:
         List of all Tag objects

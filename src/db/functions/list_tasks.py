@@ -1,18 +1,16 @@
 """List tasks database function."""
-from typing import Optional
 
 from sqlmodel import select
 
 from src.db.engine import get_session
-from src.models import Task, Priority
+from src.models import Priority, Task
 
 
 def list_tasks(
-    completed: Optional[bool] = None,
-    priority: Optional[Priority] = None,
+    completed: bool | None = None,
+    priority: Priority | None = None,
 ) -> list[Task]:
-    """
-    List tasks with optional filters.
+    """List tasks with optional filters.
 
     Args:
         completed: Filter by completion status (None = all tasks)
@@ -32,9 +30,7 @@ def list_tasks(
 
         # Order by: incomplete first, then by due date, then by priority
         statement = statement.order_by(
-            Task.completed,
-            Task.due_date.nulls_last(),
-            Task.priority.desc()
+            Task.completed, Task.due_date.nulls_last(), Task.priority.desc()
         )
 
         tasks = session.exec(statement).all()
