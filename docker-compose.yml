@@ -33,9 +33,9 @@ services:
       - ./tests:/app/tests
     command: >
       sh -c "
-        uv run python -m src.db.init_db &&
-        uv run python -m src.db.seed &&
-        uv run streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0
+        python -m src.db.init_db &&
+        python -m src.db.seed &&
+        streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0
       "
 
 volumes:
