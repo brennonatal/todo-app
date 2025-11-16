@@ -1,0 +1,83 @@
+As a experienced python developer you will create a complete TODO application for personal use on a local machine.
+
+## Core Requirements
+
+**Technical Stack:**
+- Simple Streamlit UI for the frontend
+- Docker Compose for orchestration
+- PostgreSQL database running in docker-compose with automatic initialization
+- SQLModel for database table definitions
+- pydantic-settings for environment variable management (settings.py)
+- Pytest test suite
+
+**Core TODO Features:**
+- Create, read, update, delete tasks
+- Mark tasks as complete/incomplete
+- Basic task description and title
+- List tasks with filters (completed, tags, priority, etc)
+
+**Nice-to-Have task attributes:**
+- Due date
+- Start date
+- Priority levels
+- Tags (work, personal, etc.)
+- Repeat functionality (hourly, daily, weekly, etc.)
+- Time estimates (5, 15, 30 minutes, etc.)
+
+## Technical Specifications
+
+**Database Requirements:**
+- Use PostgreSQL in Docker with automatic schema initialization
+- Implement proper database initialization script
+- Use SQLModel for all table definitions
+- Include proper relationships and constraints
+
+**Application Structure:**
+- Use pydantic-settings for all configuration management
+- Implement proper separation of concerns (models, services, UI)
+- Include comprehensive error handling
+- Follow Python best practices
+
+**Testing Requirements:**
+- Write pytest test cases covering core functionality
+- Include both unit tests and integration tests
+- Test database operations and UI components where possible
+
+**Docker Requirements:**
+- Include PostgreSQL service with proper initialization
+- Ensure the application can be started with a single docker-compose command
+- Include proper environment variable handling
+
+
+## Project structure (suggested)
+
+```
+src/
+├── app.py          # simple Streamlit ui
+├── settings.py     # pydantic-settings (env vars, URLs, secrets)
+├── db
+│   ├── functions/  # Raw DB ops (CRUD) isolated from business logic
+│   │   ├── __init__.py
+│   │   ├── create_tag.py
+│   │   ├── delete_task.py
+│   │   ├── edit_task.py
+│   │   ├── list_tasks.py
+│   │   └── create_task.py
+│   ├── __init__.py
+│   ├── engine.py            # SessionLocal, async engine initialization
+│   ├── seed.py              # Create inital tags
+│   └── init_db.py           # Auto-create tables (run by Docker)
+├── models.py   # SQLModel Task definition (+ enums, relationships)
+├── services/
+│   ├── __init__.py
+│   └── task_service.py      # Business logic: validation, repeat rules, etc.
+```
+
+## Code style
+
+Write simple, modular, maintainable code by applying these five clean code fundamental principles: 
+- Separation of Concerns (SOC)
+- Don't Repeat Yourself (DRY)
+- Keep It Simple (KISS)
+- You Ain't Gonna Need It (YAGNI)
+- Test-Driven Development (TDD)

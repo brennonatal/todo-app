@@ -1,0 +1,12 @@
+# Environment setup
+1. initialized project structure with `langgraph new .`
+    a. chose minimal template.
+    b. stripped every langgraph related file.
+    c. reasons: 
+        - strong project foundation (github workflows and dev dependencies on pyproject.toml)
+        - future LLM powered app
+2. took `uv` official Dockerfile example from https://github.com/astral-sh/uv-docker-example/blob/main/multistage.Dockerfile and changed last line for streamlit
+3. standard docker-compose.yml with development option from https://github.com/astral-sh/uv-docker-example/blob/main/compose.yml
+3. pre-added libraries using `uv add` for latest versions and reduce LLM responsability
+5. planned and wrote `initial_prompt.txt`
+6. git init and first commit
