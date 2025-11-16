@@ -1,4 +1,5 @@
 """Database seeding script - creates initial tags."""
+
 from sqlmodel import select
 
 from src.db.engine import get_session
@@ -8,11 +9,11 @@ from src.models import Tag
 def seed_initial_tags() -> None:
     """Create initial tags if they don't exist."""
     initial_tags = [
-        Tag(name="work", color="#3B82F6"),      # Blue
+        Tag(name="work", color="#3B82F6"),  # Blue
         Tag(name="personal", color="#10B981"),  # Green
-        Tag(name="urgent", color="#EF4444"),    # Red
+        Tag(name="urgent", color="#EF4444"),  # Red
         Tag(name="learning", color="#8B5CF6"),  # Purple
-        Tag(name="health", color="#F59E0B"),    # Orange
+        Tag(name="health", color="#F59E0B"),  # Orange
     ]
 
     with get_session() as session:

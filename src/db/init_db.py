@@ -1,8 +1,9 @@
 """Database initialization script - creates all tables."""
+
 from sqlmodel import SQLModel
 
 from src.db.engine import get_engine
-from src.models import Task, Tag, TaskTagLink  # noqa: F401 - needed for table creation
+from src.models import Tag, Task, TaskTagLink  # noqa: F401 - needed for table creation
 
 
 def init_db() -> None:

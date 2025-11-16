@@ -1,9 +1,15 @@
 """Streamlit TODO application."""
-import streamlit as st
+
 from datetime import datetime
 
-from src.db.functions import list_tasks, create_task, edit_task, delete_task
-from src.db.functions import list_tags, add_tag_to_task, remove_tag_from_task
+import streamlit as st
+
+from src.db.functions import (
+    create_task,
+    delete_task,
+    edit_task,
+    list_tasks,
+)
 from src.models import Priority, RepeatInterval
 
 # Page config
@@ -40,7 +46,9 @@ with st.form("new_task_form", clear_on_submit=True):
             format_func=lambda x: x.value.title(),
         )
 
-    new_description = st.text_area("Description", placeholder="Task description (optional)")
+    new_description = st.text_area(
+        "Description", placeholder="Task description (optional)"
+    )
 
     col3, col4, col5 = st.columns(3)
 
@@ -57,8 +65,13 @@ with st.form("new_task_form", clear_on_submit=True):
     with col5:
         new_repeat = st.selectbox(
             "Repeat",
-            options=[None, RepeatInterval.HOURLY, RepeatInterval.DAILY,
-                    RepeatInterval.WEEKLY, RepeatInterval.MONTHLY],
+            options=[
+                None,
+                RepeatInterval.HOURLY,
+                RepeatInterval.DAILY,
+                RepeatInterval.WEEKLY,
+                RepeatInterval.MONTHLY,
+            ],
             format_func=lambda x: "No repeat" if x is None else x.value.title(),
         )
 
@@ -70,7 +83,9 @@ with st.form("new_task_form", clear_on_submit=True):
                 title=new_title,
                 description=new_description if new_description else None,
                 priority=new_priority,
-                due_date=datetime.combine(new_due_date, datetime.min.time()) if new_due_date else None,
+                due_date=datetime.combine(new_due_date, datetime.min.time())
+                if new_due_date
+                else None,
                 time_estimate_minutes=new_time_estimate,
                 repeat_interval=new_repeat,
             )
@@ -120,7 +135,9 @@ else:
                     Priority.MEDIUM: "🟡",
                     Priority.LOW: "🟢",
                 }
-                st.text(f"{priority_colors[task.priority]} {task.priority.value.title()}")
+                st.text(
+                    f"{priority_colors[task.priority]} {task.priority.value.title()}"
+                )
 
                 # Due date if set
                 if task.due_date:
@@ -130,7 +147,7 @@ else:
                 # Delete button
                 if st.button("Delete", key=f"delete_{task.id}"):
                     delete_task(task.id)
-                    st.success(f"Task deleted!")
+                    st.success("Task deleted!")
                     st.rerun()
 
             st.divider()

@@ -1,4 +1,5 @@
 """Application settings using pydantic-settings."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
