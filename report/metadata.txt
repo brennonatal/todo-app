@@ -10,3 +10,33 @@
 3. pre-added libraries using `uv add` for latest versions and reduce LLM responsability
 5. planned and wrote `initial_prompt.txt`
 6. git init and first commit
+
+# Final Report
+
+## Time spent
+Implementation: 1 hour
+Testing and final linting: 29 minutes
+* Evidenced by ./screenshots, github actions runs, commits, and transcription.
+
+## AI tool: Claude Code with (superpowers)[https://github.com/obra/superpowers] plugin skill
+
+## Impressions
+- Well-scoped initial prompt reduced back-and-forth. Only 9 total prompts needed with minor guidance.
+- Solid environment setup helped minimizing potential issues
+- superpowers:write-plan skill provided structured implementation approach
+- Providing exact error messages + commands leads to accurate fixes
+- 100% implementation of planned features
+- Zero bugs
+- Full test coverage 
+- Major drawback: Claude Code's thinking latency made the process slower than expected
+
+**Ran out of time for:**
+- LLM-powered app
+    * Would have added ollama to docker-compose
+    * DB functions already structured for langchain @tool decorators
+    * Planned: LangChain ReAct agent to parse user requests and execute db operations
+    * Reason: Architecture was designed with this in mind (clean separation of db functions)
+
+**Additional future enhancements** (beyond original scope):
+- Reminder/notification functionality for scheduled tasks
+- Sub-tasks/nested task hierarchy
