@@ -1,6 +1,6 @@
-import pytest
 from datetime import datetime, timedelta
-from src.models import Task, Tag, Priority, RepeatInterval
+
+from src.models import Priority, RepeatInterval, Tag, Task
 
 
 def test_task_creation():
