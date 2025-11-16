@@ -2,6 +2,8 @@
 
 A personal TODO application with Streamlit UI, PostgreSQL database, and comprehensive task management features.
 
+![TODO App Interface](./report/ui.png)
+
 ## Features
 
 - **CRUD Operations**: Create, read, update, and delete tasks
@@ -25,12 +27,23 @@ A personal TODO application with Streamlit UI, PostgreSQL database, and comprehe
 - **Package Manager**: uv
 - **Orchestration**: Docker Compose
 
+## What's Included
+
+- ✅ Complete CRUD operations with Streamlit UI
+- ✅ Unit tests and integration tests with PostgreSQL
+- ✅ CI/CD workflows (GitHub Actions)
+- ✅ Docker containerization with docker-compose
+- ✅ Database initialization and seeding
+- ✅ Strict type checking (mypy --strict)
+- ✅ Code linting and formatting (ruff)
+- ✅ Code coverage reporting
+
 ## Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- (Optional) uv for local development
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+- (Optional) [uv](https://docs.astral.sh/uv/getting-started/installation/) for local development
 
 ### Run with Docker Compose
 
@@ -43,7 +56,7 @@ docker-compose up --build
 
 3. Access the app at `http://localhost:8501`
 
-The PostgreSQL database will automatically initialize with tables and seed data.
+**Note:** Database tables and seed data (default tags: work, personal, urgent, learning, health) are created automatically on first run.
 
 ### Local Development
 
@@ -143,6 +156,49 @@ This project follows clean code principles:
 - **KISS (Keep It Simple)**: Simple, maintainable code
 - **YAGNI (You Ain't Gonna Need It)**: Only necessary features
 - **TDD (Test-Driven Development)**: Comprehensive test coverage
+
+## Troubleshooting
+
+### Port 5432 already in use
+
+```bash
+# Stop existing PostgreSQL containers
+docker-compose down
+
+# Or change the port in docker-compose.yml:
+# ports:
+#   - "5433:5432"
+```
+
+### Database connection error
+
+Verify that:
+- PostgreSQL container is running: `docker-compose ps`
+- `.env` file exists with correct `DATABASE_URL`
+- `DATABASE_URL` matches credentials in `docker-compose.yml`
+
+### Integration tests failing
+
+```bash
+# Ensure PostgreSQL is running
+docker-compose up postgres -d
+
+# Initialize the database
+export DATABASE_URL=postgresql://todo:todo@localhost:5432/tododb
+uv run python -m src.db.init_db
+
+# Run tests
+uv run pytest tests/integration_tests -v
+```
+
+### Docker build issues
+
+```bash
+# Clean rebuild
+docker-compose down -v
+docker-compose build --no-cache
+docker-compose up
+```
 
 ## License
 
