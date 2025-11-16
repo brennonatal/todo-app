@@ -24,13 +24,13 @@ def seed_initial_tags() -> None:
 
             if not existing_tag:
                 session.add(tag_data)
-                print(f"Created tag: {tag_data.name}")
+                print(f"Created tag: {tag_data.name}")  # noqa: T201
             else:
-                print(f"Tag already exists: {tag_data.name}")
+                print(f"Tag already exists: {tag_data.name}")  # noqa: T201
 
         session.commit()
 
-    print("Database seeding completed")
+    print("Database seeding completed")  # noqa: T201
 
 
 if __name__ == "__main__":

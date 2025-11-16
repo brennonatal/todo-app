@@ -10,7 +10,7 @@ def init_db() -> None:
     """Initialize database by creating all tables."""
     engine = get_engine()
     SQLModel.metadata.create_all(engine)
-    print("Database tables created successfully")
+    print("Database tables created successfully")  # noqa: T201
 
 
 if __name__ == "__main__":
