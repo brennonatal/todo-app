@@ -43,5 +43,8 @@ USER nonroot
 # Use `/app` as the working directory
 WORKDIR /app
 
+# Expose Streamlit port
+EXPOSE 8501
+
 # Run the Streamlit application by default
 CMD ["streamlit", "run", "src/app.py"]

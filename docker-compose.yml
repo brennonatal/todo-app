@@ -1,20 +1,42 @@
-services:
-  app:
-    # Build the image from the Dockerfile in the current directory
-    build: .
-    develop:
-      # Create a `watch` configuration to update the app
-      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
-      watch:
-        # Sync the working directory with the `/app` directory in the container
-        - action: sync
-          path: .
-          target: /app
-          # Exclude the project virtual environment — it could be for a
-          # different platform in the container
-          ignore:
-            - .venv/
 
-        # Rebuild the image if dependencies change by checking uv.lock
-        - action: rebuild
-          path: ./uv.lock
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: todo-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-todo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo}
+      POSTGRES_DB: ${POSTGRES_DB:-tododb}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-todo} -d ${POSTGRES_DB:-tododb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: todo-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-todo}:${POSTGRES_PASSWORD:-todo}@postgres:5432/${POSTGRES_DB:-tododb}
+      DATABASE_ECHO: ${DATABASE_ECHO:-false}
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+    command: >
+      sh -c "
+        python -m src.db.init_db &&
+        python -m src.db.seed &&
+        streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0
+      "
+
+volumes:
+  postgres_data:
