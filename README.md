@@ -2,7 +2,7 @@
 
 A personal TODO application with Streamlit UI, PostgreSQL database, and comprehensive task management features.
 
-![TODO App Interface](./report/ui.png)
+![TODO App Interface](./report/screenshots/ui.png)
 
 ## Features
 
