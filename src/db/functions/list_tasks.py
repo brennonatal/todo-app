@@ -1,6 +1,7 @@
 """List tasks database function."""
 
-from sqlmodel import select
+from sqlalchemy import nulls_last
+from sqlmodel import col, select
 
 from src.db.engine import get_session
 from src.models import Priority, Task
@@ -30,7 +31,9 @@ def list_tasks(
 
         # Order by: incomplete first, then by due date, then by priority
         statement = statement.order_by(
-            Task.completed, Task.due_date.nulls_last(), Task.priority.desc()
+            col(Task.completed),
+            nulls_last(col(Task.due_date)),
+            col(Task.priority).desc(),
         )
 
         tasks = session.exec(statement).all()

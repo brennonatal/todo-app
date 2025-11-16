@@ -118,7 +118,7 @@ else:
                     key=f"complete_{task.id}",
                     label_visibility="collapsed",
                 )
-                if is_completed != task.completed:
+                if is_completed != task.completed and task.id is not None:
                     edit_task(task.id, completed=is_completed)
                     st.rerun()
 
@@ -145,7 +145,7 @@ else:
 
             with col4:
                 # Delete button
-                if st.button("Delete", key=f"delete_{task.id}"):
+                if st.button("Delete", key=f"delete_{task.id}") and task.id is not None:
                     delete_task(task.id)
                     st.success("Task deleted!")
                     st.rerun()

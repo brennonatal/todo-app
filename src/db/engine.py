@@ -3,15 +3,16 @@
 from contextlib import contextmanager
 from typing import Generator
 
+from sqlalchemy.engine import Engine
 from sqlmodel import Session, create_engine
 
 from src.settings import settings
 
 # Module-level engine singleton
-_engine = None
+_engine: Engine | None = None
 
 
-def get_engine():
+def get_engine() -> Engine:
     """Get or create the database engine singleton.
 
     This ensures connection pooling works properly by reusing
