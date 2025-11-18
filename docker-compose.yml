@@ -50,11 +50,8 @@ services:
             - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5:3b}
         volumes:
             - ollama_data:/root/.ollama
-        entrypoint: ["/bin/bash", "-c", "\
-            ollama serve & \
-            sleep 5 && \
-            ollama pull ${OLLAMA_MODEL} && \
-            wait"]
+            - ./scripts/init-ollama.sh:/usr/local/bin/init-ollama.sh
+        entrypoint: ["/usr/local/bin/init-ollama.sh"]
         restart: unless-stopped
         # deploy:
         #   resources:
