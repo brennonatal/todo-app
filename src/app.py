@@ -8,11 +8,6 @@ import httpx
 import streamlit as st
 from langgraph_sdk import get_sync_client
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-from langgraph_sdk.client import SyncLangGraphClient
-
 from src.db.functions import (
     create_task,
     delete_task,
@@ -20,6 +15,10 @@ from src.db.functions import (
     list_tasks,
 )
 from src.models import Priority, RepeatInterval
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Page config
 st.set_page_config(
@@ -33,7 +32,7 @@ LANGGRAPH_URL = os.getenv("LANGGRAPH_URL", "http://localhost:8123")
 
 
 @st.cache_resource
-def get_langgraph_client() -> SyncLangGraphClient | None:
+def get_langgraph_client():
     """Get LangGraph sync client with connection pooling."""
     try:
         # Test connection first
@@ -89,6 +88,7 @@ with tab1:
             # Get agent response
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
+                message_placeholder.markdown("_Thinking..._")
                 full_response = ""
 
                 try:
@@ -107,35 +107,32 @@ with tab1:
                         input={"messages": messages_for_agent},
                         stream_mode="values",
                     ):
-                        # Debug: log chunk structure
-                        logger.debug(f"chunk.event: {chunk.event if hasattr(chunk, 'event') else 'no event'}")
-                        logger.debug(f"chunk.data type: {type(chunk.data) if hasattr(chunk, 'data') else 'no data'}")
-
                         # Process streaming chunks with values mode
-                        # Values mode returns the full state after each step
+                        # Only extract final response, don't show intermediate steps
                         if hasattr(chunk, "data") and chunk.data:
-                            # Check if data is a dict with messages
                             if isinstance(chunk.data, dict) and "messages" in chunk.data:
                                 messages = chunk.data["messages"]
-                                logger.debug(f"messages count: {len(messages)}")
                                 if messages and len(messages) > 0:
-                                    # Get the last message (should be the assistant's response)
+                                    # Get the last message if it's from AI
                                     last_msg = messages[-1]
-                                    logger.debug(f"last_msg type: {type(last_msg)}")
-                                    logger.debug(f"last_msg: {last_msg if isinstance(last_msg, dict) else 'object'}")
 
-                                    # Try different ways to get content
-                                    content = None
-                                    if hasattr(last_msg, "content"):
-                                        content = last_msg.content
-                                    elif isinstance(last_msg, dict) and "content" in last_msg:
-                                        content = last_msg["content"]
+                                    # Check if this is an AI message
+                                    is_ai_msg = False
+                                    if isinstance(last_msg, dict):
+                                        is_ai_msg = last_msg.get("type") == "ai"
 
-                                    if content:
-                                        full_response = str(content)
-                                        message_placeholder.markdown(full_response + "▌")
+                                    if is_ai_msg:
+                                        # Extract content
+                                        content = None
+                                        if hasattr(last_msg, "content"):
+                                            content = last_msg.content
+                                        elif isinstance(last_msg, dict) and "content" in last_msg:
+                                            content = last_msg["content"]
 
-                    # Final response without cursor
+                                        if content:
+                                            full_response = str(content)
+
+                    # Display final response only
                     if full_response:
                         message_placeholder.markdown(full_response)
                     else:
