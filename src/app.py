@@ -3,10 +3,12 @@
 import logging
 import os
 from datetime import datetime
+from typing import Optional
 
 import httpx
 import streamlit as st
 from langgraph_sdk import get_sync_client
+from langgraph_sdk.client import SyncLangGraphClient
 
 from src.db.functions import (
     create_task,
@@ -32,7 +34,7 @@ LANGGRAPH_URL = os.getenv("LANGGRAPH_URL", "http://localhost:8123")
 
 
 @st.cache_resource
-def get_langgraph_client():
+def get_langgraph_client() -> Optional[SyncLangGraphClient]:
     """Get LangGraph sync client with connection pooling."""
     try:
         # Test connection first
