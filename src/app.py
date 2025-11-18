@@ -92,14 +92,16 @@ with tab1:
                         None,  # thread_id - None for threadless run
                         "agent",  # Assistant ID from langgraph.json
                         input={"messages": [{"role": "human", "content": prompt}]},
-                        stream_mode="messages",
+                        stream_mode="values",
                     ):
-                        # Process streaming chunks
-                        if chunk.event == "messages/complete":
-                            # Get the last message from the completed messages
-                            if chunk.data and len(chunk.data) > 0:
-                                last_msg = chunk.data[-1]
-                                if hasattr(last_msg, "content"):
+                        # Process streaming chunks with values mode
+                        # Values mode returns the full state after each step
+                        if chunk.data and "messages" in chunk.data:
+                            messages = chunk.data["messages"]
+                            if messages and len(messages) > 0:
+                                # Get the last message (should be the assistant's response)
+                                last_msg = messages[-1]
+                                if hasattr(last_msg, "content") and last_msg.content:
                                     full_response = last_msg.content
                                     message_placeholder.markdown(full_response + "▌")
 

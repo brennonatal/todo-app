@@ -27,6 +27,8 @@ class TaskTagLink(SQLModel, table=True):
     """Many-to-many relationship between tasks and tags."""
 
     __tablename__ = "task_tag_link"
+    __table_args__ = {"extend_existing": True}
+    __mapper_args__ = {"eager_defaults": True}
 
     task_id: int = Field(foreign_key="task.id", primary_key=True)
     tag_id: int = Field(foreign_key="tag.id", primary_key=True)
@@ -36,6 +38,8 @@ class Tag(SQLModel, table=True):
     """Tag model for categorizing tasks."""
 
     __tablename__ = "tag"
+    __table_args__ = {"extend_existing": True}
+    __mapper_args__ = {"eager_defaults": True}
 
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(unique=True, index=True, max_length=50)
@@ -49,6 +53,8 @@ class Task(SQLModel, table=True):
     """Task model with all TODO features."""
 
     __tablename__ = "task"
+    __table_args__ = {"extend_existing": True}
+    __mapper_args__ = {"eager_defaults": True}
 
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(max_length=200)
