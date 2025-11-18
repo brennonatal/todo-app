@@ -1,11 +1,16 @@
 """Streamlit TODO application with AI agent integration."""
 
+import logging
 import os
 from datetime import datetime
 
 import httpx
 import streamlit as st
 from langgraph_sdk import get_sync_client
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 from langgraph_sdk.client import SyncLangGraphClient
 
 from src.db.functions import (
@@ -94,16 +99,33 @@ with tab1:
                         input={"messages": [{"role": "human", "content": prompt}]},
                         stream_mode="values",
                     ):
+                        # Debug: log chunk structure
+                        logger.debug(f"chunk.event: {chunk.event if hasattr(chunk, 'event') else 'no event'}")
+                        logger.debug(f"chunk.data type: {type(chunk.data) if hasattr(chunk, 'data') else 'no data'}")
+
                         # Process streaming chunks with values mode
                         # Values mode returns the full state after each step
-                        if chunk.data and "messages" in chunk.data:
-                            messages = chunk.data["messages"]
-                            if messages and len(messages) > 0:
-                                # Get the last message (should be the assistant's response)
-                                last_msg = messages[-1]
-                                if hasattr(last_msg, "content") and last_msg.content:
-                                    full_response = last_msg.content
-                                    message_placeholder.markdown(full_response + "▌")
+                        if hasattr(chunk, "data") and chunk.data:
+                            # Check if data is a dict with messages
+                            if isinstance(chunk.data, dict) and "messages" in chunk.data:
+                                messages = chunk.data["messages"]
+                                logger.debug(f"messages count: {len(messages)}")
+                                if messages and len(messages) > 0:
+                                    # Get the last message (should be the assistant's response)
+                                    last_msg = messages[-1]
+                                    logger.debug(f"last_msg type: {type(last_msg)}")
+                                    logger.debug(f"last_msg: {last_msg if isinstance(last_msg, dict) else 'object'}")
+
+                                    # Try different ways to get content
+                                    content = None
+                                    if hasattr(last_msg, "content"):
+                                        content = last_msg.content
+                                    elif isinstance(last_msg, dict) and "content" in last_msg:
+                                        content = last_msg["content"]
+
+                                    if content:
+                                        full_response = str(content)
+                                        message_placeholder.markdown(full_response + "▌")
 
                     # Final response without cursor
                     if full_response:
