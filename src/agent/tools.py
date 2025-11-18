@@ -69,7 +69,7 @@ def parse_datetime(value: str | None) -> datetime | None:
     Raises:
         ValueError: If value is not a valid ISO datetime format
     """
-    if value is None:
+    if value is None or value == "":
         return None
 
     try:
@@ -134,6 +134,10 @@ def list_tasks_tool(
     Returns:
         List of Task objects matching the filters, ordered by completion status, due date, and priority
     """
+    # Handle special values that mean "no filter"
+    if priority and priority.lower() in ("omit", "none", "null", "all"):
+        priority = None
+
     priority_enum = parse_priority(priority) if priority else None
     return list_tasks(completed=completed, priority=priority_enum)
 

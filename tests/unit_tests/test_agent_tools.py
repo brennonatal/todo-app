@@ -111,6 +111,11 @@ class TestParseDatetime:
         result = parse_datetime(None)
         assert result is None
 
+    def test_parse_datetime_with_empty_string_returns_none(self) -> None:
+        """Test parsing empty string returns None."""
+        result = parse_datetime("")
+        assert result is None
+
     def test_parse_datetime_invalid_format_raises_error(self) -> None:
         """Test invalid datetime format raises ValueError with format example."""
         with pytest.raises(ValueError) as exc_info:
@@ -226,4 +231,15 @@ class TestListTasksTool:
         result = list_tasks_tool.invoke({"completed": False, "priority": "high"})
 
         mock_list_tasks.assert_called_once_with(completed=False, priority=Priority.HIGH)
+        assert result == mock_tasks
+
+    @patch("src.agent.tools.list_tasks")
+    def test_list_tasks_tool_handles_omit_priority(self, mock_list_tasks: MagicMock) -> None:
+        """Test that 'omit' priority value is treated as None."""
+        mock_tasks = [Task(id=1, title="Task 1", priority=Priority.HIGH)]
+        mock_list_tasks.return_value = mock_tasks
+
+        result = list_tasks_tool.invoke({"priority": "omit"})
+
+        mock_list_tasks.assert_called_once_with(completed=None, priority=None)
         assert result == mock_tasks

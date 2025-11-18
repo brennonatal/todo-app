@@ -3,6 +3,7 @@
 import pytest
 from langchain_core.messages import HumanMessage
 
+from src.agent.config import Config
 from src.agent.graph import graph
 
 pytestmark = pytest.mark.anyio
@@ -10,8 +11,10 @@ pytestmark = pytest.mark.anyio
 
 async def test_agent_can_create_task() -> None:
     """Test that the agent can create a task using the create_task_tool."""
+    # Use llama3.1:8b which has better function calling support
     res = await graph.ainvoke(
         {"messages": [HumanMessage(content="Create a task called 'Test integration'")]},
+        context=Config(model="ollama/llama3.1:8b"),
     )
 
     # Check that the agent responded
@@ -30,8 +33,10 @@ async def test_agent_can_create_task() -> None:
 
 async def test_agent_can_list_tasks() -> None:
     """Test that the agent can list tasks using the list_tasks_tool."""
+    # Use llama3.1:8b which has better function calling support
     res = await graph.ainvoke(
         {"messages": [HumanMessage(content="Show me all my tasks")]},
+        context=Config(model="ollama/llama3.1:8b"),
     )
 
     # Check that the agent responded
@@ -42,8 +47,10 @@ async def test_agent_can_list_tasks() -> None:
 
 async def test_agent_understands_todo_domain() -> None:
     """Test that the agent responds appropriately to todo-related queries."""
+    # Use llama3.1:8b which has better function calling support
     res = await graph.ainvoke(
         {"messages": [HumanMessage(content="What can you help me with?")]},
+        context=Config(model="ollama/llama3.1:8b"),
     )
 
     # Check that the agent mentions task/todo management capabilities

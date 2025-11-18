@@ -47,7 +47,7 @@ services:
         environment:
             - OLLAMA_KEEP_ALIVE=24h
             - OLLAMA_HOST=0.0.0.0
-            - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5:3b}
+            - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1:8b}
         volumes:
             - ollama_data:/root/.ollama
             - ./scripts/init-ollama.sh:/usr/local/bin/init-ollama.sh
