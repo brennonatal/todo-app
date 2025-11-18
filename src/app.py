@@ -3,7 +3,6 @@
 import logging
 import os
 from datetime import datetime
-from typing import Optional
 
 import httpx
 import streamlit as st
@@ -34,7 +33,7 @@ LANGGRAPH_URL = os.getenv("LANGGRAPH_URL", "http://localhost:8123")
 
 
 @st.cache_resource
-def get_langgraph_client() -> Optional[SyncLangGraphClient]:
+def get_langgraph_client() -> SyncLangGraphClient | None:
     """Get LangGraph sync client with connection pooling."""
     try:
         # Test connection first
