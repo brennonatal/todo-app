@@ -92,11 +92,19 @@ with tab1:
                 full_response = ""
 
                 try:
+                    # Build full conversation history for context
+                    messages_for_agent = []
+                    for msg in st.session_state.messages:
+                        role = "human" if msg["role"] == "user" else "ai"
+                        messages_for_agent.append({"role": role, "content": msg["content"]})
+                    # Add current message
+                    messages_for_agent.append({"role": "human", "content": prompt})
+
                     # Stream the agent's response using sync client
                     for chunk in client.runs.stream(
                         None,  # thread_id - None for threadless run
                         "agent",  # Assistant ID from langgraph.json
-                        input={"messages": [{"role": "human", "content": prompt}]},
+                        input={"messages": messages_for_agent},
                         stream_mode="values",
                     ):
                         # Debug: log chunk structure
