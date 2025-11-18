@@ -1,42 +1,128 @@
-
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: todo-postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-todo}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo}
-      POSTGRES_DB: ${POSTGRES_DB:-tododb}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-todo} -d ${POSTGRES_DB:-tododb}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    postgres:
+        image: postgres:16-alpine
+        container_name: todo-postgres
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-todo}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-todo}
+            POSTGRES_DB: ${POSTGRES_DB:-tododb}
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-todo} -d ${POSTGRES_DB:-tododb}" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  app:
-    build: .
-    container_name: todo-app
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-todo}:${POSTGRES_PASSWORD:-todo}@postgres:5432/${POSTGRES_DB:-tododb}
-      DATABASE_ECHO: ${DATABASE_ECHO:-false}
-    ports:
-      - "8501:8501"
-    volumes:
-      - ./src:/app/src
-      - ./tests:/app/tests
-    command: >
-      sh -c "
-        python -m src.db.init_db &&
-        python -m src.db.seed &&
-        streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0
-      "
+    app:
+        build: .
+        container_name: todo-app
+        depends_on:
+            postgres:
+                condition: service_healthy
+            langgraph-api:
+                condition: service_healthy
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-todo}:${POSTGRES_PASSWORD:-todo}@postgres:5432/${POSTGRES_DB:-tododb}
+            DATABASE_ECHO: ${DATABASE_ECHO:-false}
+            LANGGRAPH_URL: http://langgraph-api:8000
+        ports:
+            - "8501:8501"
+        volumes:
+            - ./src:/app/src
+            - ./tests:/app/tests
+        command: >
+            sh -c "
+              python -m src.db.init_db &&
+              python -m src.db.seed &&
+              streamlit run src/app.py --server.port=8501 --server.address=0.0.0.0
+            "
+
+    ollama:
+        image: ollama/ollama:latest
+        ports:
+            - "11434:11434"
+        environment:
+            - OLLAMA_KEEP_ALIVE=24h
+            - OLLAMA_HOST=0.0.0.0
+            - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1:8b}
+        volumes:
+            - ollama_data:/root/.ollama
+            - ./scripts/init-ollama.sh:/usr/local/bin/init-ollama.sh
+        entrypoint: ["/usr/local/bin/init-ollama.sh"]
+        restart: unless-stopped
+        # deploy:
+        #   resources:
+        #     reservations:
+        #       devices:
+        #         - driver: nvidia
+        #           count: all
+        #           capabilities: [gpu]
+        # For systems without GPU support, comment out the deploy section above
+    langgraph-redis:
+        image: redis:6
+        healthcheck:
+            test: redis-cli ping
+            interval: 5s
+            timeout: 1s
+            retries: 5
+
+    langgraph-postgres:
+        image: pgvector/pgvector:pg16
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        command:
+            - postgres
+            - -c
+            - shared_preload_libraries=vector
+        volumes:
+            - langgraph-data:/var/lib/postgresql/data
+        healthcheck:
+            test: pg_isready -U postgres
+            start_period: 10s
+            timeout: 1s
+            retries: 5
+            interval: 60s
+            start_interval: 1s
+
+    langgraph-api:
+        ports:
+            - "8123:8000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            langgraph-redis:
+                condition: service_healthy
+            langgraph-postgres:
+                condition: service_healthy
+            ollama:
+                condition: service_started
+        environment:
+            REDIS_URI: redis://langgraph-redis:6379
+            POSTGRES_URI: postgres://postgres:postgres@langgraph-postgres:5432/postgres?sslmode=disable
+            DATABASE_URL: postgresql://${POSTGRES_USER:-todo}:${POSTGRES_PASSWORD:-todo}@postgres:5432/${POSTGRES_DB:-tododb}
+            OLLAMA_BASE_URL: http://ollama:11434
+        healthcheck:
+            test: python /api/healthcheck.py
+            interval: 60s
+            start_interval: 1s
+            start_period: 10s
+        env_file:
+            - .env
+        build:
+            context: .
+            dockerfile: Dockerfile.langgraph
 
 volumes:
-  postgres_data:
+    langgraph-data:
+        driver: local
+    postgres_data:
+        driver: local
+    ollama_data:
+        driver: local
